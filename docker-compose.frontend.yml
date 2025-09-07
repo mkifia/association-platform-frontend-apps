@@ -1,0 +1,117 @@
+
+services:
+  # Member Portal - Public interface for association members
+  member-portal:
+    build:
+      context: ./member-portal
+      dockerfile: Dockerfile
+    container_name: association-member-portal
+    ports:
+      - "${MEMBER_PORTAL_PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3001}
+      - PLATFORM_BFF_URL=http://association-platform-bff:3000
+      - NEXT_PUBLIC_APP_NAME=Member Portal
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3000}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3000}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key}
+    volumes:
+      - ./member-portal/src:/app/src
+      - member_portal_node_modules:/app/node_modules
+      - member_portal_next:/app/.next
+    networks:
+      - association-platform_default
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.member-portal.rule=Host(`app.localhost`)"
+      - "traefik.http.routers.member-portal.entrypoints=web"
+      - "traefik.http.services.member-portal.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Operator Dashboard - Admin interface for platform operators
+  operator-dashboard:
+    build:
+      context: ./operator-dashboard
+      dockerfile: Dockerfile
+    container_name: association-operator-dashboard
+    ports:
+      - "${OPERATOR_DASHBOARD_PORT:-3200}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3002}
+      - OPERATOR_BFF_URL=http://association-operator-bff:3000
+      - NEXT_PUBLIC_APP_NAME=Operator Dashboard
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3200}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3200}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key}
+    volumes:
+      - ./operator-dashboard/src:/app/src
+      - operator_dashboard_node_modules:/app/node_modules
+      - operator_dashboard_next:/app/.next
+    networks:
+      - association-platform_default
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.operator-dashboard.rule=Host(`admin.localhost`)"
+      - "traefik.http.routers.operator-dashboard.entrypoints=web"
+      - "traefik.http.services.operator-dashboard.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Association Dashboard - Management interface for association administrators
+  association-dashboard:
+    build:
+      context: ./association-dashboard
+      dockerfile: Dockerfile
+    container_name: association-association-dashboard
+    ports:
+      - "${ASSOCIATION_DASHBOARD_PORT:-3300}:3000"
+    environment:
+      - NODE_ENV=${NODE_ENV:-development}
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3003}
+      - ASSOCIATION_BFF_URL=http://association-association-bff:3000
+      - NEXT_PUBLIC_APP_NAME=Association Dashboard
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL:-http://localhost:3300}
+      - NEXTAUTH_URL=${NEXTAUTH_URL:-http://localhost:3300}
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET:-your-secret-key}
+    volumes:
+      - ./association-dashboard/src:/app/src
+      - association_dashboard_node_modules:/app/node_modules
+      - association_dashboard_next:/app/.next
+    networks:
+      - association-platform_default
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.association-dashboard.rule=Host(`manage.localhost`)"
+      - "traefik.http.routers.association-dashboard.entrypoints=web"
+      - "traefik.http.services.association-dashboard.loadbalancer.server.port=3000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# External network from infrastructure
+networks:
+  association-platform_default:
+    external: true
+    name: association-platform_default
+
+volumes:
+  member_portal_node_modules:
+  member_portal_next:
+  operator_dashboard_node_modules:
+  operator_dashboard_next:
+  association_dashboard_node_modules:
+  association_dashboard_next:
