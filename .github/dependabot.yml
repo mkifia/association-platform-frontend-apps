@@ -1,0 +1,73 @@
+version: 2
+updates:
+  # Member Portal
+  - package-ecosystem: "npm"
+    directory: "/member-portal"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "association-platform/frontend-team"
+    assignees:
+      - "association-platform/frontend-team"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+
+  # Operator Dashboard
+  - package-ecosystem: "npm"
+    directory: "/operator-dashboard"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "association-platform/frontend-team"
+    assignees:
+      - "association-platform/frontend-team"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+
+  # Association Dashboard
+  - package-ecosystem: "npm"
+    directory: "/association-dashboard"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    reviewers:
+      - "association-platform/frontend-team"
+    assignees:
+      - "association-platform/frontend-team"
+    commit-message:
+      prefix: "npm"
+      include: "scope"
+
+  # Docker
+  - package-ecosystem: "docker"
+    directory: "/member-portal"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "association-platform/devops-team"
+
+  - package-ecosystem: "docker"
+    directory: "/operator-dashboard"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "association-platform/devops-team"
+
+  - package-ecosystem: "docker"
+    directory: "/association-dashboard"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "association-platform/devops-team"
+
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    reviewers:
+      - "association-platform/devops-team"
